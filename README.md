@@ -167,9 +167,9 @@ Após o desenvolvimento e validação das funcionalidades, as alterações são 
 
 Desenvolvido por:
 
+* **Nicole Bruch**
 * **Veyda Cristina Barbosa**
-* **Nicole**
-* **Vitor**
+* **Vitor W.**
 
 **Bacharelado em Ciência da Computação — FURB**
 
