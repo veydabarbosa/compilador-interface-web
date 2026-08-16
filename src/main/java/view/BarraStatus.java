@@ -21,7 +21,7 @@ public class BarraStatus extends JPanel {
     }
 
     public void mostrarArquivo(Path caminho) {
-        textoStatus.setText(caminho.toString());
+        textoStatus.setText(caminho.toAbsolutePath().toString());
     }
 
     public void limpar() {
