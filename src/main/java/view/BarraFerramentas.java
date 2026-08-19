@@ -18,12 +18,12 @@ public class BarraFerramentas extends JPanel {
         setLayout(new GridLayout(0, 1, 0, 4));
         setPreferredSize(new Dimension(150, 0));
 
-        btnNovo = criarBotao("Novo", "Ctrl+N", "novo.png");
-        btnAbrir = criarBotao("Abrir", "Ctrl+O", "abrir.png");
-        btnSalvar = criarBotao("Salvar", "Ctrl+S", "salvar.png");
-        btnCopiar = criarBotao("Copiar", "Ctrl+C", "copiar.png");
-        btnColar = criarBotao("Colar", "Ctrl+V", "colar.png");
-        btnRecortar = criarBotao("Recortar", "Ctrl+X", "recortar.png");
+        btnNovo = criarBotao("Novo", "Ctrl-N", "novo.png");
+        btnAbrir = criarBotao("Abrir", "Ctrl-O", "abrir.png");
+        btnSalvar = criarBotao("Salvar", "Ctrl-S", "salvar.png");
+        btnCopiar = criarBotao("Copiar", "Ctrl-C", "copiar.png");
+        btnColar = criarBotao("Colar", "Ctrl-V", "colar.png");
+        btnRecortar = criarBotao("Recortar", "Ctrl-X", "recortar.png");
         btncompilar = criarBotao("Compilar", "F7", "compilar.png");
         btnEquipe = criarBotao("Equipe", "F1", "equipe.png");
 
