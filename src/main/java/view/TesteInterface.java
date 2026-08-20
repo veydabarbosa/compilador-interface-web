@@ -1,7 +1,8 @@
-import javax.swing.SwingUtilities;
-import view.JanelaPrincipal;
+package view;
 
-public class main {
+import javax.swing.SwingUtilities;
+
+public class TesteInterface {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
@@ -10,3 +11,5 @@ public class main {
         });
     }
 }
+
+// Veyda
