@@ -14,6 +14,7 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.function.Consumer;
 
 public class CompiladorController {
@@ -35,12 +36,14 @@ public class CompiladorController {
 
     public void registrar(BarraFerramentas barra, JRootPane rootPane) {
 
-        //ActionListener do botão NOVO
+        barra.getBtnNovo().addActionListener(this::novo);
+        registrarAtalho(rootPane, "novo", KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK, this::novo);
 
         barra.getBtnAbrir().addActionListener(this::abrir);
         registrarAtalho(rootPane, "abrir", KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK, this::abrir);
 
-        //ActionListener do botão SALVAR
+        barra.getBtnSalvar().addActionListener(this::salvar);
+        registrarAtalho(rootPane, "salvar", KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK, this::salvar);
 
         barra.getBtnCopiar().addActionListener(e -> editor.getAreaTexto().copy());
         barra.getBtnColar().addActionListener(e -> editor.getAreaTexto().paste());
@@ -65,7 +68,12 @@ public class CompiladorController {
         });
     }
 
-    //Função NOVO
+    private void novo(ActionEvent e) {
+        editor.limpar();
+        areaMensagens.limpar();
+        barraStatus.limpar();
+        arquivo.limpar(); // "esquece" a pasta e o nome do arquivo editado
+    }
 
     private void abrir(ActionEvent e) {
         JFileChooser fileChooser = new JFileChooser();
@@ -90,7 +98,45 @@ public class CompiladorController {
         }
     }
 
-    //Função Salvar
+    private void salvar(ActionEvent e) {
+        if (arquivo.isNovo()) {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileFilter(new FileNameExtensionFilter("Arquivo de texto (*.txt)", "txt"));
+
+            int resultado = fileChooser.showSaveDialog(SwingUtilities.getWindowAncestor(editor));
+            if (resultado != JFileChooser.APPROVE_OPTION) {
+                return;
+            }
+
+            Path caminho = garantirExtensaoTxt(fileChooser.getSelectedFile().toPath());
+            try {
+                arquivoService.salvar(caminho, editor.getTexto());
+                arquivo.setCaminho(caminho);
+                areaMensagens.limpar();
+                barraStatus.mostrarArquivo(caminho); // arquivo passou a existir: atualiza status
+            } catch (IOException ex) {
+                areaMensagens.limpar();
+                areaMensagens.mostrarMensagem("Erro ao salvar o arquivo: " + ex.getMessage());
+            }
+        } else {
+            try {
+                arquivoService.salvar(arquivo.getCaminho(), editor.getTexto());
+                areaMensagens.limpar();
+                // barra de status mantida - continua mostrando o mesmo caminho (item 12.2)
+            } catch (IOException ex) {
+                areaMensagens.limpar();
+                areaMensagens.mostrarMensagem("Erro ao salvar o arquivo: " + ex.getMessage());
+            }
+        }
+    }
+
+    private Path garantirExtensaoTxt(Path caminho) {
+        String nome = caminho.toString();
+        if (!nome.toLowerCase().endsWith(".txt")) {
+            return caminho.resolveSibling(caminho.getFileName() + ".txt");
+        }
+        return caminho;
+    }
 
     private void compilar(ActionEvent e) {
         areaMensagens.limpar();
