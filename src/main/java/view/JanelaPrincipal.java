@@ -4,7 +4,6 @@ import javax.swing.JFrame;
 import javax.swing.JSplitPane;
 import java.awt.BorderLayout;
 
-//Veyda
 public class JanelaPrincipal extends JFrame {
 
     private final BarraFerramentas barraFerramentas;

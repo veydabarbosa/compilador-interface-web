@@ -3,7 +3,6 @@ package view;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-//Veyda
 public class Editor extends JScrollPane {
 
     private final JTextArea areaTexto;

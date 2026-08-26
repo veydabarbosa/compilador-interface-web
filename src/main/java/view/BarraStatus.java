@@ -6,7 +6,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.nio.file.Path;
 
-//Nicole
 public class BarraStatus extends JPanel {
 
     private final JLabel textoStatus;

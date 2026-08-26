@@ -3,7 +3,6 @@ package view;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-//Nicole
 public class AreaMensagens extends JScrollPane {
 
     private final JTextArea areaTexto;

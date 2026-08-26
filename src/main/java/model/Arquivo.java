@@ -2,7 +2,6 @@ package model;
 
 import java.nio.file.Path;
 
-//Nicole
 public class Arquivo {
 
     private Path caminho;
