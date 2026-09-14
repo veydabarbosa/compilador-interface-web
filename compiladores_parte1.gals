@@ -1,0 +1,76 @@
+#Options
+GenerateScanner = true
+GenerateParser = false
+Language = Java
+ScannerName = Lexico
+ScannerCaseSensitive = true
+ScannerTable = Compact
+Input = String
+#RegularDefinitions
+//1) definicoes regulares auxiliares
+
+mai: [A-Z]
+min: [a-z]
+
+letra: {mai} | {min}
+
+dig: [0-9]
+
+bloco: ##
+
+excessao_quebra_bloco: [^#]*
+
+
+
+#Tokens
+//tokens
+palavra_reservada:! {min} ({mai} {min} | {min})*
+
+identificador_int:! i_{letra}({letra} | {dig})* 
+identificador_float:! f_{letra}({letra} | {dig})* 
+identificador_string:! s_{letra}({letra} | {dig})* 
+identificador_bool:! b_{letra}({letra} | {dig})* 
+
+const_int:! {dig}+
+const_float:! {dig}+,{dig}+
+const_string:! \"[^\n\"\\]*\"
+
+//palavras reservadas
+and = palavra_reservada: "and"
+false = palavra_reservada: "false"
+if = palavra_reservada: "if"
+in = palavra_reservada: "in"
+isfalsedo = palavra_reservada: "isFalseDo"
+istruedo = palavra_reservada: "isTrueDo"
+module = palavra_reservada: "module"
+not = palavra_reservada: "not"
+or = palavra_reservada: "or"
+out = palavra_reservada: "out"
+true = palavra_reservada: "true"
+while = palavra_reservada: "while"
+
+//caracteres especiais
+","
+":"
+";"
+"["
+"]"
+"("
+")"
+"{"
+"}"
+"+"
+"-"
+"*"
+"/"
+"<-"
+"="
+"<>"
+"<"
+">"
+
+//reconhecer e ignorar comentario
+:! {bloco}{excessao_quebra_bloco}{bloco}
+
+//reconhecer e ignorar formatacao
+:[\n\s\t]

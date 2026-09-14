@@ -1,5 +1,10 @@
 package controller;
 
+import lexico.Constants;
+import lexico.LexicalError;
+import lexico.Lexico;
+import lexico.Token;
+
 import model.Arquivo;
 import service.ArquivoService;
 import view.AreaMensagens;
@@ -140,7 +145,126 @@ public class CompiladorController {
 
     private void compilar(ActionEvent e) {
         areaMensagens.limpar();
-        areaMensagens.mostrarMensagem("Compilação de programas ainda não foi implementada.");
+
+        String codigo = editor.getTexto();
+
+        Lexico lexico = new Lexico();
+        lexico.setInput(codigo);
+
+        StringBuilder resultado = new StringBuilder();
+
+        resultado.append(
+                String.format(
+                        "%-10s %-25s %s%n",
+                        "linha",
+                        "classe",
+                        "lexema"
+                )
+        );
+
+        try {
+            Token t = null;
+
+            while ((t = lexico.nextToken()) != null) {
+                int linha = calcularLinha(codigo, t.getPosition());
+
+                if (t.getId() == Constants.t_palavra_reservada) {
+                    areaMensagens.mostrarMensagem(
+                            "linha " + linha + ": "
+                                    + t.getLexeme()
+                                    + " palavra reservada inválida"
+                    );
+                    return;
+                }
+
+                String classe = obterClasse(t.getId());
+
+                resultado.append(
+                        String.format(
+                                "%-10d %-25s %s%n",
+                                linha,
+                                classe,
+                                t.getLexeme()
+                        )
+                );
+            }
+
+            resultado.append("\nprograma compilado com sucesso");
+            areaMensagens.mostrarMensagem(resultado.toString());
+
+        } catch (LexicalError erro) {
+            int linha = calcularLinha(codigo, erro.getPosition());
+
+            areaMensagens.mostrarMensagem(
+                    montarMensagemErro(codigo, erro, linha)
+            );
+        }
+    }
+
+    private int calcularLinha(String codigo, int posicao) {
+        int linha = 1;
+
+        for (int i = 0; i < posicao && i < codigo.length(); i++) {
+            if (codigo.charAt(i) == '\n') {
+                linha++;
+            }
+        }
+
+        return linha;
+    }
+
+    private String obterClasse(int id) {
+        if (id >= Constants.t_and && id <= Constants.t_while) {
+            return "palavra reservada";
+        }
+
+        if (id >= Constants.t_TOKEN_22
+                && id <= Constants.t_TOKEN_39) {
+            return "símbolo especial";
+        }
+
+        switch (id) {
+            case Constants.t_identificador_int:
+            case Constants.t_identificador_float:
+            case Constants.t_identificador_string:
+            case Constants.t_identificador_bool:
+                return "identificador";
+
+            case Constants.t_const_int:
+                return "constante_int";
+
+            case Constants.t_const_float:
+                return "constante_float";
+
+            case Constants.t_const_string:
+                return "constante_string";
+
+            default:
+                return "";
+        }
+    }
+
+    private String montarMensagemErro(
+            String codigo,
+            LexicalError erro,
+            int linha
+    ) {
+        String descricao = erro.getMessage();
+
+        if ("símbolo inválido".equals(descricao)) {
+            String simbolo = "";
+
+            if (erro.getPosition() < codigo.length()) {
+                simbolo = String.valueOf(
+                        codigo.charAt(erro.getPosition())
+                );
+            }
+
+            return "linha " + linha + ": "
+                    + simbolo + " símbolo inválido";
+        }
+
+        return "linha " + linha + ": " + descricao;
     }
 
     private void equipe(ActionEvent e) {
