@@ -4,6 +4,10 @@ import lexico.Constants;
 import lexico.LexicalError;
 import lexico.Lexico;
 import lexico.Token;
+import lexico.Sintatico;
+import lexico.Semantico;
+import lexico.SyntaticError;
+import lexico.SemanticError;
 
 import model.Arquivo;
 import service.ArquivoService;
@@ -77,7 +81,7 @@ public class CompiladorController {
         editor.limpar();
         areaMensagens.limpar();
         barraStatus.limpar();
-        arquivo.limpar(); // "esquece" a pasta e o nome do arquivo editado
+        arquivo.limpar();
     }
 
     private void abrir(ActionEvent e) {
@@ -145,59 +149,46 @@ public class CompiladorController {
 
     private void compilar(ActionEvent e) {
         areaMensagens.limpar();
-
         String codigo = editor.getTexto();
+        final Token[] ultimoToken = new Token[1];
 
-        Lexico lexico = new Lexico();
+        Lexico lexico = new Lexico() {
+            @Override
+            public Token nextToken() throws LexicalError {
+                Token token = super.nextToken();
+                ultimoToken[0] = token;
+                if (token != null && token.getId() == Constants.t_palavra_reservada) {
+                    throw new LexicalError("erro léxico", token.getPosition());
+                }
+                return token;
+            }
+        };
         lexico.setInput(codigo);
-
-        StringBuilder resultado = new StringBuilder();
-
-        resultado.append(
-                String.format(
-                        "%-10s %-25s %s%n",
-                        "linha",
-                        "classe",
-                        "lexema"
-                )
-        );
+        Sintatico sintatico = new Sintatico();
+        Semantico semantico = new Semantico();
 
         try {
-            Token t = null;
-
-            while ((t = lexico.nextToken()) != null) {
-                int linha = calcularLinha(codigo, t.getPosition());
-
-                if (t.getId() == Constants.t_palavra_reservada) {
-                    areaMensagens.mostrarMensagem(
-                            "linha " + linha + ": "
-                                    + t.getLexeme()
-                                    + " palavra reservada inválida"
-                    );
-                    return;
-                }
-
-                String classe = obterClasse(t.getId());
-
-                resultado.append(
-                        String.format(
-                                "%-10d %-25s %s%n",
-                                linha,
-                                classe,
-                                t.getLexeme()
-                        )
-                );
-            }
-
-            resultado.append("\nprograma compilado com sucesso");
-            areaMensagens.mostrarMensagem(resultado.toString());
-
+            sintatico.parse(lexico, semantico);
+            areaMensagens.mostrarMensagem("programa compilado com sucesso");
         } catch (LexicalError erro) {
             int linha = calcularLinha(codigo, erro.getPosition());
-
-            areaMensagens.mostrarMensagem(
-                    montarMensagemErro(codigo, erro, linha)
-            );
+            areaMensagens.mostrarMensagem("linha " + linha + ": erro léxico");
+        } catch (SyntaticError erro) {
+            int linha = calcularLinha(codigo, erro.getPosition());
+            Token token = ultimoToken[0];
+            String encontrado;
+            if (token == null || token.getId() == Constants.DOLLAR) {
+                encontrado = "EOF";
+            } else if (token.getId() == Constants.t_const_string) {
+                encontrado = "constante_string";
+            } else {
+                encontrado = token.getLexeme();
+            }
+            areaMensagens.mostrarMensagem("linha " + linha + ": encontrado "
+                    + encontrado + " " + erro.getMessage());
+        } catch (SemanticError erro) {
+            int linha = calcularLinha(codigo, erro.getPosition());
+            areaMensagens.mostrarMensagem("linha " + linha + ": " + erro.getMessage());
         }
     }
 
@@ -211,60 +202,6 @@ public class CompiladorController {
         }
 
         return linha;
-    }
-
-    private String obterClasse(int id) {
-        if (id >= Constants.t_and && id <= Constants.t_while) {
-            return "palavra reservada";
-        }
-
-        if (id >= Constants.t_TOKEN_22
-                && id <= Constants.t_TOKEN_39) {
-            return "símbolo especial";
-        }
-
-        switch (id) {
-            case Constants.t_identificador_int:
-            case Constants.t_identificador_float:
-            case Constants.t_identificador_string:
-            case Constants.t_identificador_bool:
-                return "identificador";
-
-            case Constants.t_const_int:
-                return "constante_int";
-
-            case Constants.t_const_float:
-                return "constante_float";
-
-            case Constants.t_const_string:
-                return "constante_string";
-
-            default:
-                return "";
-        }
-    }
-
-    private String montarMensagemErro(
-            String codigo,
-            LexicalError erro,
-            int linha
-    ) {
-        String descricao = erro.getMessage();
-
-        if ("símbolo inválido".equals(descricao)) {
-            String simbolo = "";
-
-            if (erro.getPosition() < codigo.length()) {
-                simbolo = String.valueOf(
-                        codigo.charAt(erro.getPosition())
-                );
-            }
-
-            return "linha " + linha + ": "
-                    + simbolo + " símbolo inválido";
-        }
-
-        return "linha " + linha + ": " + descricao;
     }
 
     private void equipe(ActionEvent e) {
