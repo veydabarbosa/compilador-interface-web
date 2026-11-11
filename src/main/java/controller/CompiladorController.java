@@ -8,7 +8,6 @@ import lexico.Sintatico;
 import lexico.Semantico;
 import lexico.SyntaticError;
 import lexico.SemanticError;
-
 import model.Arquivo;
 import service.ArquivoService;
 import view.AreaMensagens;
@@ -149,6 +148,14 @@ public class CompiladorController {
 
     private void compilar(ActionEvent e) {
         areaMensagens.limpar();
+
+        if (arquivo.isNovo()) {
+            areaMensagens.mostrarMensagem(
+                    "Salve o arquivo antes de compilar."
+            );
+            return;
+        }
+
         String codigo = editor.getTexto();
         final Token[] ultimoToken = new Token[1];
 
@@ -157,38 +164,70 @@ public class CompiladorController {
             public Token nextToken() throws LexicalError {
                 Token token = super.nextToken();
                 ultimoToken[0] = token;
-                if (token != null && token.getId() == Constants.t_palavra_reservada) {
-                    throw new LexicalError("erro léxico", token.getPosition());
+
+                if (token != null
+                        && token.getId() == Constants.t_palavra_reservada) {
+                    throw new LexicalError(
+                            "erro léxico", token.getPosition()
+                    );
                 }
+
                 return token;
             }
         };
+
         lexico.setInput(codigo);
+
         Sintatico sintatico = new Sintatico();
         Semantico semantico = new Semantico();
 
         try {
             sintatico.parse(lexico, semantico);
+
+            Path caminhoFonte = arquivo.getCaminho();
+            String nomeFonte = caminhoFonte.getFileName().toString();
+            int ponto = nomeFonte.lastIndexOf('.');
+
+            String nomeBase = ponto > 0
+                    ? nomeFonte.substring(0, ponto)
+                    : nomeFonte;
+
+            Path caminhoIl = caminhoFonte.resolveSibling(nomeBase + ".il");
+
+            arquivoService.salvar(caminhoIl, semantico.getCodigoObjeto());
+
             areaMensagens.mostrarMensagem("programa compilado com sucesso");
+
         } catch (LexicalError erro) {
             int linha = calcularLinha(codigo, erro.getPosition());
-            areaMensagens.mostrarMensagem("linha " + linha + ": erro léxico");
+            areaMensagens.mostrarMensagem(
+                    "linha " + linha + ": erro léxico"
+            );
+
         } catch (SyntaticError erro) {
             int linha = calcularLinha(codigo, erro.getPosition());
             Token token = ultimoToken[0];
-            String encontrado;
-            if (token == null || token.getId() == Constants.DOLLAR) {
-                encontrado = "EOF";
-            } else if (token.getId() == Constants.t_const_string) {
-                encontrado = "constante_string";
-            } else {
-                encontrado = token.getLexeme();
-            }
-            areaMensagens.mostrarMensagem("linha " + linha + ": encontrado "
-                    + encontrado + " " + erro.getMessage());
+
+            String encontrado = token == null
+                    || token.getId() == Constants.DOLLAR
+                    ? "EOF"
+                    : token.getLexeme();
+
+            areaMensagens.mostrarMensagem(
+                    "linha " + linha + ": encontrado "
+                            + encontrado + ", erro sintático"
+            );
+
         } catch (SemanticError erro) {
             int linha = calcularLinha(codigo, erro.getPosition());
-            areaMensagens.mostrarMensagem("linha " + linha + ": " + erro.getMessage());
+            areaMensagens.mostrarMensagem(
+                    "linha " + linha + ": " + erro.getMessage()
+            );
+
+        } catch (IOException erro) {
+            areaMensagens.mostrarMensagem(
+                    "Erro ao salvar o código objeto: " + erro.getMessage()
+            );
         }
     }
 
@@ -206,6 +245,8 @@ public class CompiladorController {
 
     private void equipe(ActionEvent e) {
         areaMensagens.limpar();
-        areaMensagens.mostrarMensagem("Equipe de desenvolvimento:\nNicole Bruch\nVeyda Cristina Barbosa\nVitor W.");
+        areaMensagens.mostrarMensagem(
+                "Equipe de desenvolvimento:\nNicole Bruch\nVeyda Cristina Barbosa\nVitor W."
+        );
     }
 }

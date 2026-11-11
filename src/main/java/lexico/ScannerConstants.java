@@ -1,7 +1,6 @@
 package lexico;
 
-public interface ScannerConstants
-{
+public interface ScannerConstants {
     int[] SCANNER_TABLE_INDEXES =
             {
                     0,
@@ -1272,16 +1271,16 @@ public interface ScannerConstants
                     {122, 39}
             };
 
-    int[] TOKEN_STATE = {-2,  0, -2, -2, 25, 26, 31, 29, 22, 30, 32,  7, 36, 34, 37, 23, 24,  2,  2,  2,  2,  2, 27, 28,  9, -2, -2, 33, 35, -2, -2, -2, -2, -2, -2,  8,  6,  4,  3,  5,  0 };
+    int[] TOKEN_STATE = {-2, 0, -2, -2, 25, 26, 31, 29, 22, 30, 32, 7, 36, 34, 37, 23, 24, 2, 2, 2, 2, 2, 27, 28, 9, -2, -2, 33, 35, -2, -2, -2, -2, -2, -2, 8, 6, 4, 3, 5, 0};
 
     int[] SPECIAL_CASES_INDEXES =
-            { 0, 0, 0, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12 };
+            {0, 0, 0, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12};
 
     String[] SPECIAL_CASES_KEYS =
-            {  "and", "false", "if", "in", "isFalseDo", "isTrueDo", "module", "not", "or", "out", "true", "while" };
+            {"and", "false", "if", "in", "isFalseDo", "isTrueDo", "module", "not", "or", "out", "true", "while"};
 
     int[] SPECIAL_CASES_VALUES =
-            {  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21 };
+            {10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21};
 
     String[] SCANNER_ERROR =
             {

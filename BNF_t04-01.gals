@@ -119,7 +119,7 @@ while = palavra_reservada: "while"
 
 #Grammar
 //1
-<forma_geral>::= module <declaracao_variaveis> "{" <lista_comandos> "}" ;
+<forma_geral>::= module #101 <declaracao_variaveis> "{" <lista_comandos> "}" #102 ;
 //<lista_comandos>::= <comando> | <comando> <lista_comandos> ;
 <lista_comandos>::= <comando> <lista_comandos1> ;
 <lista_comandos1> ::= î | <lista_comandos> ; 
@@ -131,16 +131,16 @@ while = palavra_reservada: "while"
 //<lista_identificadores>::= <identificador> | <identificador> "," <lista_identificadores> ;
 <lista_identificadores>::= <identificador> <lista_identificadores1> ;
 <lista_identificadores1> ::=  î | "," <lista_identificadores> ;
-<identificador>::= <tipo_identificadores> <int_colchetes> ;
+<identificador>::= <tipo_identificadores> #103 <int_colchetes> ;
 <tipo_identificadores>::= identificador_int | identificador_float | identificador_string | identificador_bool ;
-<int_colchetes>::= î | "["const_int"]" ;
+<int_colchetes>::= #104 î | "["const_int #105 "]" ;
 
 //3 ajustada - trabalho 2
-<comando_atribuicao>::= <tipo_identificadores> <expressao_colchetes> "<-" <expressao> ;
+<comando_atribuicao>::= <tipo_identificadores> #103 <expressao_colchetes> "<-" <expressao> #106 ;
 //<lista_id_entrada> ::= <tipo_identificadores> <expressao_colchetes> | <tipo_identificadores> <expressao_colchetes> "," <lista_id_entrada> ; 
-<lista_id_entrada> ::= <tipo_identificadores> <expressao_colchetes> <lista_id_entrada1> ; 
+<lista_id_entrada> ::= <tipo_identificadores> #103 <expressao_colchetes> #108 <lista_id_entrada1> ; 
 <lista_id_entrada1> ::=  î |  "," <lista_id_entrada> ;
-<expressao_colchetes> ::= î | "[" <expressao> "]" ;
+<expressao_colchetes> ::= î | #107 "[" <expressao> "]" #134 ;
 
 //4 ajustada - trabalho 2
 <comando_entrada>::= in "(" <lista_id_entrada> ")" ;
@@ -148,41 +148,41 @@ while = palavra_reservada: "while"
 //5
 <comando_saida>::= out "(" <lista_expressoes> ")" ;
 //<lista_expressoes>::= <expressao> | <expressao> "," <lista_expressoes> ;
-<lista_expressoes>::= <expressao> <lista_expressoes1> ;
+<lista_expressoes>::= <expressao> #109 <lista_expressoes1> ;
 <lista_expressoes1> ::= î | "," <lista_expressoes> ;
 
 //6
 //<comando_selecao>::= if "(" <expressao> ")" istruedo "{" <lista_comandos> "}" <isfalsedo_opcional> | if "(" <expressao> ")" isfalsedo "{" <lista_comandos> "}" <istruedo_opcional> ;
-<comando_selecao> ::= if "(" <expressao> ")" <comando_selecao1> ;
-<comando_selecao1> ::= istruedo <comando_selecao2> <isfalsedo_opcional> | isfalsedo <comando_selecao2> <istruedo_opcional> ;
+<comando_selecao> ::= if "(" <expressao> ")" <comando_selecao1> #111 ;
+<comando_selecao1> ::= istruedo #110 <comando_selecao2> <isfalsedo_opcional> | isfalsedo #110 <comando_selecao2> <istruedo_opcional> ;
 <comando_selecao2> ::= "{" <lista_comandos> "}" ;
-<isfalsedo_opcional>::= î | isfalsedo "{" <lista_comandos> "}" ;
-<istruedo_opcional>::= î | istruedo "{" <lista_comandos> "}" ;
+<isfalsedo_opcional>::= î | isfalsedo #112 "{" <lista_comandos> "}" ;
+<istruedo_opcional>::= î | istruedo #112 "{" <lista_comandos> "}" ;
 
 //7
 //<comando_repeticao>::= while "(" <expressao> ")" istruedo "{" <lista_comandos> "}" | while "(" <expressao> ")" isfalsedo "{" <lista_comandos> "}" ;
-<comando_repeticao> ::= while "(" <expressao> ")" <comando_repeticao1> ;  
-<comando_repeticao1> ::=  istruedo <comando_repeticao2> | isfalsedo <comando_repeticao2>  ;
-<comando_repeticao2> ::= "{" <lista_comandos> "}" ;
+<comando_repeticao> ::= #113 while "(" <expressao> ")" <comando_repeticao1> ;  
+<comando_repeticao1> ::=  istruedo #114 <comando_repeticao2> | isfalsedo #114 <comando_repeticao2>  ;
+<comando_repeticao2> ::= "{" <lista_comandos> "}" #115 ;
 
 //trabalho 3:
 <expressao> ::= <termo_logico> <expressao_> ; 
-<expressao_> ::= î | and <termo_logico> <expressao_> | or <termo_logico> <expressao_> ;
-<termo_logico> ::= <relacional> | true | false | not <termo_logico> ;
+<expressao_> ::= î | and <termo_logico> #116 <expressao_> | or <termo_logico> #117 <expressao_> ;
+<termo_logico> ::= <relacional> | true #118 | false #119 | not <termo_logico> #120 ;
 
 <relacional>  ::= <aritmetica> <relacional_> ;
-<relacional_>  ::= î | <operador_relacional> <aritmetica> ;
+<relacional_>  ::= î | <operador_relacional> #121 <aritmetica> #122 ;
 <operador_relacional>::= "=" | "<>" | "<" | ">" ; 
 
 <aritmetica> ::= <termo_aritmetico> <aritmetica_> ;
-<aritmetica_> ::= î | "+" <termo_aritmetico> <aritmetica_> | "-" <termo_aritmetico> <aritmetica_> ;
+<aritmetica_> ::= î | "+" <termo_aritmetico> #123 <aritmetica_> | "-" <termo_aritmetico> #124 <aritmetica_> ;
 
 <termo_aritmetico> ::= <fator> <termo_aritmetico_> ; 
-<termo_aritmetico_> ::= î | "*" <fator> <termo_aritmetico_> | "/" <fator> <termo_aritmetico_> ;
+<termo_aritmetico_> ::= î | "*" <fator> #125 <termo_aritmetico_> | "/" <fator> #126 <termo_aritmetico_> ;
 
-<fator> ::= <identificador_expressao> <vetor> | const_int | const_float | const_string | "(" <expressao> ")" | "+" <fator> | "-" <fator> ; 
+<fator> ::= <identificador_expressao> #127 <vetor> | const_int #128 | const_float #129 | const_string #130 | "(" <expressao> ")" | "+" <fator> #131 | "-" <fator> #132 ; 
 
 <identificador_expressao>::= identificador_int | identificador_float | identificador_string | identificador_bool; 
-<vetor> ::= î | "[" <expressao> "]" ; 
+<vetor> ::= î | "[" <expressao> "]" #133 ; 
 
 
